@@ -1,13 +1,15 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 func main() {
-	app := fiber.New()
+	server := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
+	server.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Merhaba test")
 	})
 
-	app.Listen(":3000")
+	server.Listen(":3000")
 }
