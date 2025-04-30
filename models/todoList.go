@@ -14,4 +14,5 @@ type ToDoList struct {
 	UserID     string     `json:"userid"` // Bu listeyi oluşturan kullanıcının ID'si (jwt tokendan alınır)
 }
 
+//Mock ToDoLists table
 var ToDoLists = []ToDoList{}

@@ -14,4 +14,6 @@ type ToDoStep struct {
 	DeletedAt  *time.Time `json:"deletedat"` // time.Time her zaman bir değer ister, nil olabilmesi için pointer yapıldı
 }
 
+
+//Mock ToDoSteps table
 var ToDoSteps = []ToDoStep{}
