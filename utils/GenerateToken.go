@@ -8,7 +8,7 @@ import (
 )
 
 func GenerateToken(user *models.User) (string, error) {
-	secretKey := os.Getenv("JWT_SECRET")
+	secretKey := []byte(os.Getenv("JWT_SECRET"))
 	method := jwt.SigningMethodHS256
 	claims := jwt.MapClaims{
 		"userID": user.ID,
@@ -21,3 +21,4 @@ func GenerateToken(user *models.User) (string, error) {
 	}
 	return token, nil
 }
+
