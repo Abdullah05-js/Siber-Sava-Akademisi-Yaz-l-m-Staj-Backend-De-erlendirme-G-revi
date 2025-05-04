@@ -65,9 +65,9 @@ func UpdateTodoListCompletion(Id string) {
 				}
 			}
 			if countSteps > 0 {
-				newTodoList := todoLists[index] 
+				newTodoList := todoLists[index]
 				newTodoList.Completion = float64(countStepsComplete) / float64(countSteps) * 100
-				newTodoList.UpdatedAt = time.Now()	
+				newTodoList.UpdatedAt = time.Now()
 				todoLists[index] = newTodoList
 			}
 			break
@@ -96,4 +96,14 @@ func GetTodoListsByUserId(userId string, isAdmin bool) []fiber.Map {
 	}
 
 	return data
+}
+
+func IsTodoListExistById(Id string) bool {
+	_, ok := todoLists[Id]
+
+	if !ok {
+		return false
+	}
+
+	return true
 }

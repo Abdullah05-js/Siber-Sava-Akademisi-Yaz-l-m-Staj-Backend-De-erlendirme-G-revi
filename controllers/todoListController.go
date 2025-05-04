@@ -82,6 +82,15 @@ func CreateTodoListStep(c *fiber.Ctx) error {
 			"error": "body format is wrong",
 		})
 	}
+
+	ok := models.IsTodoListExistById(todoListId)
+
+	if !ok {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Todo list not found or deleted",
+		})
+	}
+
 	id := uuid.NewString()
 	models.CreateTodoListStep(
 		id,
