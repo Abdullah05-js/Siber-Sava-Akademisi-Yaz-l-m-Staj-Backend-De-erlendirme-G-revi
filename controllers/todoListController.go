@@ -109,7 +109,7 @@ func DeleteTodoListStep(c *fiber.Ctx) error {
 		})
 	}
 
-	isSuccess := models.FindStepAndDeleteById(todoListStepId, userId)
+	isSuccess := models.FindStepAndDeleteById(todoListStepId, userId) // bunlara mesaj ekle yani isSuccess,message
 
 	if !isSuccess {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
