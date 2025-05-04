@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type TodoList struct {
@@ -15,35 +17,42 @@ type TodoList struct {
 }
 
 // Mock todoList table
-var todoLists = []TodoList{}
+var todoLists = map[string]TodoList{}
 
 func CreateTodoList(Id string, Name string, CreatedAt time.Time, UpdatedAt time.Time, DeletedAt *time.Time, Completion float64, UserID string) {
-	todoLists = append(todoLists, TodoList{Id: Id, Name: Name, CreatedAt: CreatedAt, UpdatedAt: UpdatedAt, DeletedAt: DeletedAt, Completion: Completion, UserID: UserID})
+	todoLists[Id] = TodoList{Id: Id, Name: Name, CreatedAt: CreatedAt, UpdatedAt: UpdatedAt, DeletedAt: DeletedAt, Completion: Completion, UserID: UserID}
 }
 
 func FindListAndDeleteById(Id string, userId string) bool {
-	for index, todoList := range todoLists {
-		if todoList.Id == Id && userId == todoList.UserID {
-			now := time.Now()
-			todoLists[index].DeletedAt = &now
-			todoSteps[index].UpdatedAt = time.Now()
-			return true
+	todoList, ok := todoLists[Id]
+	if !ok || userId != todoList.UserID {
+		return false
+	}
+	
+	for _, todoStep := range todoSteps {
+		if todoStep.TodoListID == Id {
+			FindStepAndDeleteById(todoStep.Id, userId)
 		}
 	}
-	return false
+
+	now := time.Now()
+	todoList.DeletedAt = &now
+	todoList.UpdatedAt = now
+	todoLists[Id] = todoList
+
+	return true
 }
 
 func GetUserByTodoListId(Id string) string {
-	for _, todoList := range todoLists {
-		if todoList.Id == Id {
-			return todoList.UserID
-		}
+	todoList, ok := todoLists[Id]
+	if !ok {
+		return ""
 	}
-	return ""
+	return todoList.UserID
 }
 
 func UpdateTodoListCompletion(Id string) {
-	for index, todoList := range todoLists {
+	for _, todoList := range todoLists {
 		if todoList.Id == Id && todoList.DeletedAt == nil {
 			countSteps := 1
 			countStepsComplete := 0
@@ -55,9 +64,35 @@ func UpdateTodoListCompletion(Id string) {
 					countSteps++
 				}
 			}
-			todoLists[index].Completion = float64(countStepsComplete/countSteps) * 100
-			todoLists[index].UpdatedAt = time.Now()
+			todoList := todoLists[Id]
+
+			todoList.Completion = float64(countStepsComplete/countSteps) * 100
+			todoList.UpdatedAt = time.Now()
+			todoLists[Id] = todoList
 			break
 		}
 	}
+}
+
+func GetTodoListsByUserId(userId string, isAdmin bool) []fiber.Map {
+	var data []fiber.Map
+
+	for _, todoList := range todoLists {
+		if (todoList.UserID == userId || isAdmin) && todoList.DeletedAt == nil {
+
+			StepsArr := []TodoStep{}
+			for _, todoStep := range todoSteps {
+				if todoStep.TodoListID == todoList.Id && todoStep.DeletedAt == nil {
+					StepsArr = append(StepsArr, todoStep)
+				}
+			}
+
+			data = append(data, fiber.Map{
+				"todolist":  todoList,
+				"todosteps": StepsArr,
+			})
+		}
+	}
+
+	return data
 }

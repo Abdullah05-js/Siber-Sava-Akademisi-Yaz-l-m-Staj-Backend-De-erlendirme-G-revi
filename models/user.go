@@ -8,9 +8,9 @@ type User struct {
 }
 
 //Mock Users table
-var Users = []User{
-	{ID: "3f0f5f7a-2e4a-4a25-9c8c-2c1147f153ed", UserName: "Abdullah", Pass: "1,@3A", IsAdmin: false},
-	{ID: "gf0fdsfa-sg4a-52s5-9c8c-2asd47fdfb3a", UserName: "Admin", Pass: "A2K,2@S", IsAdmin: true},
+var Users = map[string]User{
+	"3f0f5f7a-2e4a-4a25-9c8c-2c1147f153ed": {ID: "3f0f5f7a-2e4a-4a25-9c8c-2c1147f153ed", UserName: "Abdullah", Pass: "1,@3A", IsAdmin: false},
+	"gf0fdsfa-sg4a-52s5-9c8c-2asd47fdfb3a": {ID: "gf0fdsfa-sg4a-52s5-9c8c-2asd47fdfb3a", UserName: "Admin", Pass: "A2K,2@S", IsAdmin: true},
 }
 
 func GetUserByName(name string) (User, bool) {
@@ -20,4 +20,10 @@ func GetUserByName(name string) (User, bool) {
 		}
 	}
 	return User{}, false
+}
+
+
+func GetUserById(Id string)(User,bool){
+	user,ok := Users[Id]
+	return user,ok
 }

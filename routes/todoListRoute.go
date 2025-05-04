@@ -7,10 +7,8 @@ import (
 
 func TodoListRoutes(app fiber.Router) {
 
-	// Kullanıcının tüm yapılacaklar listelerini (ToDo listelerini) getirmek için
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{})
-	})
+	// Kullanıcının tüm yapılacaklar listelerini (ToDo listelerini) getirmek için (admin ise tüm toDo listlerini gönderilir)
+	app.Get("/", controllers.GetTodoLists)
 
 	// Yeni bir yapılacaklar listesi oluşturmak için
 	app.Post("/create", controllers.CreateTodoList)

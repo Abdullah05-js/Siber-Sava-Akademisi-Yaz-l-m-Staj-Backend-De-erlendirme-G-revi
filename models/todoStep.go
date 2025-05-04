@@ -15,37 +15,52 @@ type TodoStep struct {
 }
 
 // Mock todoSteps table
-var todoSteps = []TodoStep{}
+var todoSteps = map[string]TodoStep{}
 
 func CreateTodoListStep(Id string, TodoListID string, Content string, IsComplete bool, CreatedAt time.Time, UpdatedAt time.Time, DeletedAt *time.Time) {
-	todoSteps = append(todoSteps, TodoStep{Id: Id, TodoListID: TodoListID, Content: Content, IsComplete: IsComplete, CreatedAt: CreatedAt, UpdatedAt: UpdatedAt, DeletedAt: DeletedAt})
+	todoSteps[Id] = TodoStep{Id: Id, TodoListID: TodoListID, Content: Content, IsComplete: IsComplete, CreatedAt: CreatedAt, UpdatedAt: UpdatedAt, DeletedAt: DeletedAt}
+	UpdateTodoListCompletion(TodoListID)
 }
 
 func FindStepAndDeleteById(Id string, userId string) bool {
-	for index, todoListStep := range todoSteps {
-		if todoListStep.Id == Id && userId == GetUserByTodoListId(todoListStep.TodoListID) {
-			now := time.Now()
-			todoSteps[index].DeletedAt = &now
-			todoSteps[index].UpdatedAt = time.Now()
-			return true
-		}
+	step, ok := todoSteps[Id]
+	if !ok || userId != todoLists[step.TodoListID].UserID {
+		return false
+	} else if step.DeletedAt != nil {
+		return true
 	}
-	return false
+	now := time.Now()
+	step.DeletedAt = &now
+	step.UpdatedAt = now
+	todoSteps[Id] = step
+	UpdateTodoListCompletion(todoSteps[Id].TodoListID) // değer(kopya) olarak gönder
+	return true
 }
 
 func UpdateTodoListStep(Id string, content string, iscomplete bool, userId string) bool {
-	for index, todoListStep := range todoSteps {
-		if todoListStep.Id == Id && userId == GetUserByTodoListId(todoListStep.TodoListID) && todoListStep.DeletedAt == nil {
-			if todoListStep.IsComplete != iscomplete {
-				todoSteps[index].IsComplete = iscomplete
-				UpdateTodoListCompletion(todoListStep.TodoListID)
-			}
-			if content != "" {
-				todoSteps[index].Content = content
-			}
-			todoSteps[index].UpdatedAt = time.Now()
-			return true
-		}
+	step, ok := todoSteps[Id]
+
+	if !ok || step.DeletedAt != nil || userId != todoLists[step.TodoListID].UserID {
+		return false
 	}
-	return false
+
+	if step.IsComplete != iscomplete {
+		step.IsComplete = iscomplete
+		UpdateTodoListCompletion(todoSteps[Id].TodoListID)
+	}
+
+	if content != "" {
+		step.Content = content
+	}
+
+	todoList := todoLists[step.TodoListID]
+
+	now := time.Now()
+	todoList.UpdatedAt = now
+	step.UpdatedAt = now
+
+	todoLists[step.TodoListID] = todoList
+	todoSteps[Id] = step
+
+	return true
 }

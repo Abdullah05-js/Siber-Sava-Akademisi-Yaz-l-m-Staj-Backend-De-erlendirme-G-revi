@@ -135,7 +135,7 @@ func UpdateTodoListStep(c *fiber.Ctx) error {
 
 	InputModel := new(struct {
 		Content    string `json:"content"`
-		IsComplete bool   `json:"isdone"`
+		IsComplete bool   `json:"iscomplete"`
 	})
 
 	err := c.BodyParser(InputModel)
@@ -155,4 +155,20 @@ func UpdateTodoListStep(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status": "Updated successfully",
 	})
+}
+
+func GetTodoLists(c *fiber.Ctx) error {
+	userId := c.Locals("userID").(string)
+
+	user, ok := models.GetUserById(userId)
+
+	if !ok {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "user not found or deleted",
+		})
+	}
+
+	todoLists := models.GetTodoListsByUserId(userId, user.IsAdmin)
+
+	return c.Status(fiber.StatusOK).JSON(todoLists)
 }

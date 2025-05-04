@@ -13,11 +13,10 @@ func main() {
 	if err != nil {
 		fmt.Println("--Error loading .env file--")
 	}
-	
 	server := fiber.New()
-	
-	routes.Router(server)
 
+	routes.Router(server)
+	
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
