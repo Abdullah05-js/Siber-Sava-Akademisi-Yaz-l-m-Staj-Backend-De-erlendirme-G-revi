@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -67,6 +68,7 @@ func UpdateTodoListCompletion(Id string) {
 			if countSteps > 0 {
 				newTodoList := todoLists[index]
 				newTodoList.Completion = float64(countStepsComplete) / float64(countSteps) * 100
+				fmt.Println(newTodoList.Completion)
 				newTodoList.UpdatedAt = time.Now()
 				todoLists[index] = newTodoList
 			}

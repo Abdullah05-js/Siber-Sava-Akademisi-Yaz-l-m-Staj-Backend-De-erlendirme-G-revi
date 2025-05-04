@@ -46,7 +46,6 @@ func UpdateTodoListStep(Id string, content string, iscomplete bool, userId strin
 
 	if step.IsComplete != iscomplete {
 		step.IsComplete = iscomplete
-		UpdateTodoListCompletion(todoSteps[Id].TodoListID)
 	}
 
 	if content != "" {
@@ -61,6 +60,6 @@ func UpdateTodoListStep(Id string, content string, iscomplete bool, userId strin
 
 	todoLists[step.TodoListID] = todoList
 	todoSteps[Id] = step
-
+	UpdateTodoListCompletion(todoSteps[Id].TodoListID)
 	return true
 }
