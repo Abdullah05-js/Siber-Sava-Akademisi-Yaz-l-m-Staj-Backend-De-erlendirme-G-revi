@@ -28,7 +28,7 @@ func FindListAndDeleteById(Id string, userId string) bool {
 	if !ok || userId != todoList.UserID {
 		return false
 	}
-	
+
 	for _, todoStep := range todoSteps {
 		if todoStep.TodoListID == Id {
 			FindStepAndDeleteById(todoStep.Id, userId)
@@ -52,23 +52,24 @@ func GetUserByTodoListId(Id string) string {
 }
 
 func UpdateTodoListCompletion(Id string) {
-	for _, todoList := range todoLists {
+	for index, todoList := range todoLists {
 		if todoList.Id == Id && todoList.DeletedAt == nil {
-			countSteps := 1
+			countSteps := 0
 			countStepsComplete := 0
 			for _, todoListStep := range todoSteps {
 				if todoListStep.TodoListID == todoList.Id {
+					countSteps++
 					if todoListStep.IsComplete {
 						countStepsComplete++
 					}
-					countSteps++
 				}
 			}
-			todoList := todoLists[Id]
-
-			todoList.Completion = float64(countStepsComplete/countSteps) * 100
-			todoList.UpdatedAt = time.Now()
-			todoLists[Id] = todoList
+			if countSteps > 0 {
+				newTodoList := todoLists[index] 
+				newTodoList.Completion = float64(countStepsComplete) / float64(countSteps) * 100
+				newTodoList.UpdatedAt = time.Now()	
+				todoLists[index] = newTodoList
+			}
 			break
 		}
 	}
