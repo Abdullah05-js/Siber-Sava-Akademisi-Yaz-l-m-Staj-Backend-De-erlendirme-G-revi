@@ -58,7 +58,7 @@ func UpdateTodoListCompletion(Id string) {
 			countSteps := 0
 			countStepsComplete := 0
 			for _, todoListStep := range todoSteps {
-				if todoListStep.TodoListID == todoList.Id && todoList.DeletedAt == nil {
+				if todoListStep.TodoListID == todoList.Id && todoListStep.DeletedAt == nil {
 					countSteps++
 					if todoListStep.IsComplete {
 						countStepsComplete++
