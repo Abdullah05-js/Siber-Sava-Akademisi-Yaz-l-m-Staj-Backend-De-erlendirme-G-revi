@@ -1,10 +1,8 @@
 package models
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/gofiber/fiber/v2"
+	"time"
 )
 
 type TodoList struct {
@@ -71,40 +69,37 @@ func UpdateTodoListCompletion(Id string) {
 
 	if countSteps > 0 {
 		todoList.Completion = float64(countStepsComplete) / float64(countSteps) * 100
-		todoList.UpdatedAt = time.Now()
-		todoLists[Id] = todoList
+	} else {
+		todoList.Completion = float64(0)
 	}
+	todoList.UpdatedAt = time.Now()
+	todoLists[Id] = todoList
 }
 
 func GetTodoListsByUserId(userId string, isAdmin bool) []fiber.Map {
 	var data []fiber.Map
 
 	for _, todoList := range todoLists {
+
 		if (todoList.UserID == userId || isAdmin) && todoList.DeletedAt == nil {
 
-			StepsArr := []TodoStep{}
+			var stepsArr []TodoStep
 			for _, todoStep := range todoSteps {
 				if todoStep.TodoListID == todoList.Id && todoStep.DeletedAt == nil {
-					StepsArr = append(StepsArr, todoStep)
+					stepsArr = append(stepsArr, todoStep)
 				}
 			}
 
 			data = append(data, fiber.Map{
 				"todolist":  todoList,
-				"todosteps": StepsArr,
+				"todosteps": stepsArr,
 			})
 		}
 	}
-
 	return data
 }
 
 func IsTodoListExistById(Id string) bool {
 	_, ok := todoLists[Id]
-
-	if !ok {
-		return false
-	}
-
-	return true
+	return ok
 }
